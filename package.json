@@ -1,0 +1,24 @@
+{
+  "name": "format-rj-code",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "./index.js",
+  "author": "lqisa",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0"
+  },
+  "dependencies": {
+    "jsdom": "^16.6.0",
+    "socks-proxy-agent": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=15"
+  },
+  "engineStrict": true
+}
