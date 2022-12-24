@@ -14,8 +14,12 @@
     "eslint-plugin-promise": "^5.1.0"
   },
   "dependencies": {
-    "jsdom": "^16.6.0",
-    "socks-proxy-agent": "^5.0.0"
+    "argv": "^0.0.2",
+    "axios": "^1.2.1",
+    "jsdom": "^16.6.0"
+  },
+  "scripts": {
+    "dev": "node index.js"
   },
   "engines": {
     "node": ">=15"

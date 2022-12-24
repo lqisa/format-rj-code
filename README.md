@@ -2,4 +2,5 @@
 
 ## TODO List
 - [ ] dir scan depth support
-- [ ] RJ code cache (DB)
+- [ x ] RJ code cache
+- [ ] arguments support
