@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\index.js",
-            "args": ["X:\\新建文件夹\\新建文件夹", "--port=7890"],
+            "args": ["X:\\新建文件夹", "--port=7890"],
         }
     ]
 }

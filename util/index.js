@@ -13,11 +13,9 @@ const getProxyConfig = (
   host = '127.0.0.1',
   port = 7890
 ) => ({
-  proxy: {
-    protocol,
-    host,
-    port
-  }
+  protocol,
+  host,
+  port
 })
 
 const getDLSiteLink = (code) =>
@@ -65,7 +63,7 @@ const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
         finalName = `${resultName}.${fileSuffix}`
       }
       if (finalName) {
-        console.log(`${rootPath}/${fileName} -> ${rootPath}/${finalName}`)
+        console.log(`${fileName} -> ${finalName}`)
         fs.renameSync(
           path.resolve(rootPath, fileName),
           path.resolve(rootPath, finalName)

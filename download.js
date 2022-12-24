@@ -2,7 +2,13 @@ const fs = require('fs')
 const util = require('util')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
-const { getProxyConfig, getDLSiteLink, parseName, updateDB, renameFiles } = require('./util')
+const {
+  getProxyConfig,
+  getDLSiteLink,
+  parseName,
+  updateDB,
+  renameFiles
+} = require('./util')
 const db = require('./db/code2NameMap')
 
 const readdir = util.promisify(fs.readdir)
@@ -25,15 +31,26 @@ const requsetDLSite = async ({
     }
     try {
       const _redirectUrlMap = redirectUrlMap
-      const res = await Promise.allSettled(rjCodes.map(c => axios.get(redirectUrlMap[c] || getDLSiteLink(c), axiosProxyConfig)))
+      const res = await Promise.allSettled(
+        rjCodes.map((c) =>
+          axios.get(redirectUrlMap[c] || getDLSiteLink(c), {
+            proxy: axiosProxyConfig,
+            headers: {
+              cookie: 'locale=zh-cn'
+            }
+          })
+        )
+      )
       res.forEach((r, i) => {
         if (r.status === 'fulfilled') {
           const curCode = rjCodes[i]
           const data = r.value
           const statusCode = data.status
           if (statusCode === 200) {
-            rjCode2DocumentMap[curCode] = new JSDOM(data.data, { contentType: 'text/html; charset=utf-8' }).window.document
-            _rjCodes = _rjCodes.filter(i => i !== curCode)
+            rjCode2DocumentMap[curCode] = new JSDOM(data.data, {
+              contentType: 'text/html; charset=utf-8'
+            }).window.document
+            _rjCodes = _rjCodes.filter((i) => i !== curCode)
             console.log(`✔️ request ${curCode} ok`)
           } else if (statusCode === 302) {
             _redirectUrlMap[curCode] = data.headers.location
@@ -65,15 +82,13 @@ const requsetDLSite = async ({
   }
 }
 
-const getRjCode2NameMap = ({
-  rjCodes,
-  code2DocMap,
-  code2NameMap = {}
-}) => {
-  rjCodes.forEach(code => {
+const getRjCode2NameMap = ({ rjCodes, code2DocMap, code2NameMap = {} }) => {
+  rjCodes.forEach((code) => {
     const doc = code2DocMap[code]
     // 社团
-    const brand = doc?.querySelector?.('span[itemprop="brand"]')?.textContent?.trim()
+    const brand = doc
+      ?.querySelector?.('span[itemprop="brand"]')
+      ?.textContent?.trim()
     const title = doc?.querySelector?.('#work_name')?.textContent?.trim()
     if (brand && title) {
       const name = `[${code}][${brand}]${title}`
@@ -85,7 +100,7 @@ const getRjCode2NameMap = ({
   return code2NameMap
 }
 
-async function download (rootPath, proxyPort) {
+async function download (rootPath) {
   try {
     const files = await readdir(rootPath, { encoding: 'utf8' })
     const rjCodeToFileNameMap = {}
