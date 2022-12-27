@@ -1,9 +1,11 @@
 {
   "name": "format-rj-code",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "index.js",
-  "bin": "./index.js",
+  "bin": {
+    "format-rj-code": "./index.js"
+  },
   "author": "lqisa",
   "license": "ISC",
   "devDependencies": {
@@ -19,8 +21,7 @@
     "jsdom": "^16.6.0"
   },
   "scripts": {
-    "dev": "node index.js",
-    "postinstall": "npm link"
+    "dev": "node index.js"
   },
   "engines": {
     "node": ">=15"
