@@ -35,7 +35,7 @@ const updateDB = (newMap) => {
   keys.forEach((code) => {
     dbJson[code] = newMap[code]
   })
-  fs.writeFileSync('./db/code2NameMap.json', JSON.stringify(dbJson, null, 2))
+  fs.writeFileSync(path.reolve(__dirname, 'db/code2NameMap.json'), JSON.stringify(dbJson, null, 2))
 }
 
 const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
