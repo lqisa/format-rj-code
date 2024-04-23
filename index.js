@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const [, , rootPath = process.cwd(), proxyPort] = process.argv
+const [, , rootPath = process.cwd(), proxyPort] = process.argv;
 
 // TODO args support
 // const argv = require('argv')
@@ -26,8 +26,19 @@ const [, , rootPath = process.cwd(), proxyPort] = process.argv
 
 // const args = argv.run()
 
-console.log('rootPath: ', rootPath)
+console.log("rootPath: ", rootPath);
 
-const { download } = require('./download')
+const { download } = require("./download");
 
-download(rootPath, proxyPort)
+download(rootPath, proxyPort).then((errors) => {
+  if (errors) {
+    process.stdin.resume();
+    // process.stdin.setEncoding('utf8')
+
+    // console.log('Error occurred while downloading: ', errors)
+
+    process.stdin.on("data", function () {
+      process.exit();
+    });
+  }
+});

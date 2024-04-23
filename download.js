@@ -15,7 +15,7 @@ const readdir = util.promisify(fs.readdir)
 
 const axios = require('axios')
 
-const requsetDLSite = async ({
+const requestDLSite = async ({
   rjCodes,
   curTry = 0,
   maxReTry = 3,
@@ -61,7 +61,7 @@ const requsetDLSite = async ({
         }
       })
       if (_rjCodes.length) {
-        return requsetDLSite({
+        return requestDLSite({
           rjCodes: _rjCodes,
           curTry: curTry + 1,
           maxTry: maxReTry,
@@ -122,7 +122,7 @@ async function download (rootPath) {
 
     const proxyConfig = getProxyConfig()
 
-    const code2DocMap = await requsetDLSite({
+    const code2DocMap = await requestDLSite({
       rjCodes: toQueryRjCodes,
       proxyConfig
     })
@@ -141,6 +141,7 @@ async function download (rootPath) {
     renameFiles({ rjCodes, rjCodeToFileNameMap, rootPath })
   } catch (e) {
     console.error(e)
+    return e
   }
 }
 
