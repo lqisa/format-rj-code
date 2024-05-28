@@ -23,6 +23,7 @@ jobs:
   publish:
     needs: install-deps
     runs-on: ubuntu-latest
+    environment: confirm_publish
     permissions:
       contents: read
       packages: write
