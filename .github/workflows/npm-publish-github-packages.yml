@@ -11,17 +11,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  install-deps:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
+  # install-deps:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
+  #     - run: npm ci
 
   publish:
-    needs: install-deps
+    # needs: install-deps
     runs-on: ubuntu-latest
     environment: confirm_publish
     permissions:
@@ -33,6 +33,7 @@ jobs:
         with:
           node-version: 16
           # registry-url: https://npm.pkg.github.com/
-      - run: npm publish --provenance --access public
+      # - run: npm publish --provenance --access public
+      - run: echo $secrets.NPM_TOKEN
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
