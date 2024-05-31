@@ -60,7 +60,7 @@ const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
       fileNameList.forEach((fileName) => {
         const filePath = path.resolve(rootPath, fileName)
         const fileStatus = fs.statSync(filePath)
-        const fileSuffix = fileName.substr(fileName.lastIndexOf('.') + 1) || ''
+        const fileSuffix = path.extname(fileName)
 
         let finalName = ''
 
@@ -75,13 +75,13 @@ const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
           is7zMultiPartArchive
         ) {
           // process Multi-part archive
-          const rarMultiArchivePartName = fileName.match(/(?<partName>part\d{2})\./i)?.groups.partName;
+          const rarMultiArchivePartName = fileName.match(/(?<partName>part\d{3})\./i)?.groups.partName;
           if (rarMultiArchivePartName) {
-            finalName = `${resultName}.${rarMultiArchivePartName}.${fileSuffix}`
+            finalName = `${resultName}.${rarMultiArchivePartName}${fileSuffix}`
           } else if (is7zMultiPartArchive) {
-            finalName = `${resultName}.7z.${fileSuffix}`
+            finalName = `${resultName}.7z${fileSuffix}`
           } else {
-            finalName = `${resultName}.${fileSuffix}`
+            finalName = `${resultName}${fileSuffix}`
           }
         }
         if (finalName) {
