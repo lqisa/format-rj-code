@@ -1,5 +1,5 @@
-const fs = require('fs')
-const util = require('util')
+const fs = require('node:fs')
+const util = require('node:util')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
 const {
@@ -107,7 +107,7 @@ async function download (rootPath) {
     let rjCodes = []
     let toQueryRjCodes = []
     files.forEach((file) => {
-      const rjCode = file.match(/(?<name>rj\d+)/i)?.groups.name
+      const rjCode = file.match(/(?<name>(r|v)j\d+)/i)?.groups.name
       if (rjCode) {
         // console.log(rjCode + ' ' + file)
         rjCodeToFileNameMap[rjCode] = rjCodeToFileNameMap[rjCode] || [];
