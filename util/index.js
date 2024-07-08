@@ -1,12 +1,21 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const {
   specialCharsMap,
   normalMusicSuffixes,
   normalCompressedFileSuffixes
 } = require('../constant')
-const dbJson = require('../db/code2NameMap.json')
+
+const _dbPath = path.resolve(__dirname, '../db.json');
+
+try {
+  fs.accessSync(_dbPath, fs.constants.F_OK)
+} catch (err) {
+  fs.writeFileSync(_dbPath, '{}', { encoding: 'utf8' });
+}
+
+const dbJson = require(_dbPath);
 
 const getProxyConfig = (
   protocol = 'http',
@@ -35,7 +44,7 @@ const updateDB = (newMap) => {
   keys.forEach((code) => {
     dbJson[code] = newMap[code]
   })
-  fs.writeFileSync(path.resolve(__dirname, '../db/code2NameMap.json'), JSON.stringify(dbJson, null, 2))
+  fs.writeFileSync(_dbPath, JSON.stringify(dbJson, null, 2))
 }
 
 const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
@@ -43,32 +52,50 @@ const renameFiles = ({ rjCodes, rjCodeToFileNameMap, rootPath }) => {
   rjCodes.forEach((code) => {
     const resultName = dbJson[code]
     if (resultName) {
-      const fileName = rjCodeToFileNameMap[code]
-      if (!fileName) {
+      const fileNameList = rjCodeToFileNameMap[code]
+      if (!fileNameList) {
         console.log(`failed to found file name of ${code}`)
         return
       }
-      const filePath = path.resolve(rootPath, fileName)
-      const fileStatus = fs.statSync(filePath)
-      const fileSuffix = fileName.substr(fileName.lastIndexOf('.') - 1) || ''
+      fileNameList.forEach((fileName) => {
+        const filePath = path.resolve(rootPath, fileName)
+        const fileStatus = fs.statSync(filePath)
+        const fileSuffix = path.extname(fileName)
 
-      let finalName = ''
+        let finalName = ''
 
-      if (fileStatus.isDirectory()) {
-        finalName = resultName
-      } else if (
-        normalMusicSuffixes.includes(fileSuffix) ||
-        normalCompressedFileSuffixes.includes(fileSuffix)
-      ) {
-        finalName = `${resultName}.${fileSuffix}`
-      }
-      if (finalName) {
-        console.log(`${fileName} -> ${finalName}`)
-        fs.renameSync(
-          path.resolve(rootPath, fileName),
-          path.resolve(rootPath, finalName)
-        )
-      }
+        const is7zMultiPartArchive = /\.7z.\d{3}$/.test(fileName);
+
+        if (fileStatus.isDirectory()) {
+          finalName = resultName
+        } else if (
+          normalMusicSuffixes.includes(fileSuffix) ||
+          normalCompressedFileSuffixes.includes(fileSuffix) ||
+          // 7z Multi-part archive
+          is7zMultiPartArchive
+        ) {
+          // process Multi-part archive
+          const rarMultiArchivePartName = fileName.match(/(?<partName>part\d{3})\./i)?.groups.partName;
+          if (rarMultiArchivePartName) {
+            finalName = `${resultName}.${rarMultiArchivePartName}${fileSuffix}`
+          } else if (is7zMultiPartArchive) {
+            finalName = `${resultName}.7z${fileSuffix}`
+          } else {
+            finalName = `${resultName}${fileSuffix}`
+          }
+        }
+        if (finalName) {
+          if (fileName === finalName) {
+            console.log(`SKIP: ${fileName}`)
+            return;
+          }
+          console.log(`${fileName} -> ${finalName}`)
+          fs.renameSync(
+            path.resolve(rootPath, fileName),
+            path.resolve(rootPath, finalName)
+          )
+        }
+      });
     }
   })
   console.log('======= rename end ========')

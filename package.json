@@ -1,6 +1,6 @@
 {
   "name": "format-rj-code",
-  "version": "0.2.6",
+  "version": "0.2.10",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,18 +13,17 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
-    "@eslint/js": "^9.1.1",
-    "eslint": "^8.57.0",
+    "@eslint/js": "^9.3.0",
+    "eslint": "^8.3.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
-    "globals": "^15.0.0",
+    "globals": "^15.3.0",
     "prettier": "^3.2.5",
     "prettier-eslint": "^16.3.0"
   },
   "dependencies": {
-    "argv": "^0.0.2",
     "axios": "^1.2.1",
     "jsdom": "^16.6.0"
   },

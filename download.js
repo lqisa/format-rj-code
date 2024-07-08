@@ -1,5 +1,5 @@
-const fs = require('fs')
-const util = require('util')
+const fs = require('node:fs')
+const util = require('node:util')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
 const {
@@ -9,7 +9,7 @@ const {
   updateDB,
   renameFiles
 } = require('./util')
-const db = require('./db/code2NameMap')
+const db = require('./db.json')
 
 const readdir = util.promisify(fs.readdir)
 
@@ -51,12 +51,12 @@ const requestDLSite = async ({
               contentType: 'text/html; charset=utf-8'
             }).window.document
             _rjCodes = _rjCodes.filter((i) => i !== curCode)
-            console.log(`✔️ request ${curCode} ok`)
+            console.log(`OK: request ${curCode}`)
           } else if (statusCode === 302) {
             _redirectUrlMap[curCode] = data.headers.location
-            console.log(`❓ request ${curCode} redirect`)
+            console.log(`Redirect: request ${curCode}`)
           } else {
-            console.log(`❌ request ${curCode} failed`)
+            console.log(`Failed: request ${curCode}`)
           }
         }
       })
@@ -104,13 +104,14 @@ async function download (rootPath) {
   try {
     const files = await readdir(rootPath, { encoding: 'utf8' })
     const rjCodeToFileNameMap = {}
-    const rjCodes = []
-    const toQueryRjCodes = []
+    let rjCodes = []
+    let toQueryRjCodes = []
     files.forEach((file) => {
-      const rjCode = file.match(/(?<name>rj\d+)/i)?.groups.name
+      const rjCode = file.match(/(?<name>(r|v)j\d+)/i)?.groups.name
       if (rjCode) {
         // console.log(rjCode + ' ' + file)
-        rjCodeToFileNameMap[rjCode] = file
+        rjCodeToFileNameMap[rjCode] = rjCodeToFileNameMap[rjCode] || [];
+        rjCodeToFileNameMap[rjCode].push(file)
         rjCodes.push(rjCode)
         if (db[rjCode]) {
           console.log(`✔️ found ${rjCode} in db`)
@@ -121,6 +122,10 @@ async function download (rootPath) {
     })
 
     const proxyConfig = getProxyConfig()
+
+    // uniq
+    rjCodes = [...new Set(rjCodes)];
+    toQueryRjCodes = [...new Set(toQueryRjCodes)];
 
     const code2DocMap = await requestDLSite({
       rjCodes: toQueryRjCodes,
